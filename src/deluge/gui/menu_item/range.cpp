@@ -59,13 +59,17 @@ void Range::horizontalEncoderAction(int32_t offset) {
 
 		// Can edit this, stop here.
 		if (mayEditRangeEdge(tmpCol)) {
-			soundEditor.editingColumn = tmpCol;
-			drawValueForEditingRange(true);
+			editColumn(tmpCol);
 			return;
 		}
 
 		// Next column!
 	}
+}
+
+void Range::editColumn(int32_t col) {
+	soundEditor.editingColumn = col;
+	drawValueForEditingRange(true);
 }
 
 // Returns whether there was anything to cancel

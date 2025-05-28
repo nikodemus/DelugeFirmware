@@ -505,6 +505,36 @@ bool MultiRange::mayEditRangeEdge(int32_t col) {
 	return true;
 }
 
+ActionResult MultiRange::tryToggleColumn(int32_t col) {
+	if (soundEditor.editingColumn == col) {
+		cancelEditingIfItsOn();
+	}
+	else if (mayEditRangeEdge(col)) {
+		editColumn(col);
+	}
+	return ActionResult::DEALT_WITH;
+}
+
+ActionResult MultiRange::buttonAction(deluge::hid::Button b, bool on, bool inCard) {
+	(void)inCard;
+	bool ok = on && display->haveOLED();
+	if (ok && b == deluge::hid::button::SYNTH) {
+		return tryToggleColumn(1);
+	}
+	else if (ok && b == deluge::hid::button::KIT) {
+		return tryToggleColumn(2);
+	}
+	else if (ok && b == deluge::hid::button::MIDI) {
+		return tryToggleColumn(3);
+	}
+	else if (ok && b == deluge::hid::button::CV) {
+		return tryToggleColumn(4);
+	}
+	else {
+		return ActionResult::NOT_DEALT_WITH;
+	}
+}
+
 void MultiRange::drawPixelsForOled() {
 	etl::vector<std::string_view, kOLEDMenuNumOptionsVisible> itemNames{};
 	char nameBuffers[kOLEDMenuNumOptionsVisible][ROW_SIZE];

@@ -37,6 +37,7 @@ public:
 	bool cancelEditingIfItsOn();
 
 protected:
+	void editColumn(int32_t col);
 	virtual void getText(char* buffer, int32_t* getLeftLength = nullptr, int32_t* getRightLength = nullptr,
 	                     bool mayShowJustOne = true) = 0;
 	virtual bool mayEditRangeEdge(int32_t column) { return true; }

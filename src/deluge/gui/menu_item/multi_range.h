@@ -28,12 +28,14 @@ public:
 	void beginSession(MenuItem* navigatedBackwardFrom) override;
 	void selectEncoderAction(int32_t offset) override;
 	MenuItem* selectButtonPress() override;
+	ActionResult buttonAction(deluge::hid::Button b, bool on, bool inCard) override;
 	void noteOnToChangeRange(int32_t noteCode);
 	bool isRangeDependent() override { return true; }
 	void deletePress();
 	MenuItem* menuItemHeadingTo;
 
 protected:
+	ActionResult tryToggleColumn(int32_t col);
 	void getText(char* buffer, int32_t* getLeftLength = nullptr, int32_t* getRightLength = nullptr,
 
 	             bool mayShowJustOne = true) override;
