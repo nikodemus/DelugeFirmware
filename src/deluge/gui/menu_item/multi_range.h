@@ -43,7 +43,7 @@ protected:
 		return l10n::getView(l10n::String::STRING_FOR_NOTE_RANGE);
 	};
 	void drawPixelsForOled() override;
-	[[nodiscard]] virtual int32_t columnCount() { return 3; }
+	[[nodiscard]] virtual int32_t columnCount() { return 4; }
 
 	// NOTE: this isn't strictly speaking needed, but refactoring the selectEncoderAction() and
 	// displayPixelsForOled() to not use additional storage for scroll position was more work
