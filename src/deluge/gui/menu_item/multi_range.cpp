@@ -400,16 +400,17 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 			*(bufferPos++) = ' ';
 		}
 		*(bufferPos++) = '=';
-		// transpose = 60 - midiNote <=> note = tranpose - 60;
-		noteCodeToString(sampleHolder->transpose - 60, bufferPos, nullptr, true);
+		// transpose = 60 - midiNote <=> note = 60 - tranpose;
+		noteCodeToString(60 - sampleHolder->transpose, bufferPos, nullptr, true);
 		bufferPos = buffer + strlen(buffer);
-		if (sampleHolder->cents >= 0) {
-			*(bufferPos++) = '+';
+		if (sampleHolder->cents != 0) {
+			if (sampleHolder->cents >= 0) {
+				*(bufferPos++) = '+';
+			}
+			intToString(sampleHolder->cents, bufferPos);
+			bufferPos = buffer + strlen(buffer);
 		}
-		intToString(sampleHolder->cents, bufferPos);
-		bufferPos = buffer + strlen(buffer);
 		*(bufferPos++) = 0;
-		D_PRINTLN(" fin=%d", (int)strlen(buffer));
 	}
 }
 
@@ -483,7 +484,7 @@ void MultiRange::drawPixelsForOled() {
 		}
 		else if (soundEditor.editingRangeEdge == RangeEdit::RIGHT) {
 			highlightStartX = kTextSpacingX * 10;
-			highlightWidth = OLED_MAIN_WIDTH_PIXELS - highlightStartX;
+			highlightWidth = kTextSpacingX * 3;
 		}
 
 		int32_t baseY = (OLED_MAIN_HEIGHT_PIXELS == 64) ? 15 : 14;
