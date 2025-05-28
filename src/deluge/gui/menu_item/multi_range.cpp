@@ -386,6 +386,21 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 		*(bufferPos++) = '-';
 		*(bufferPos++) = ' ';
 		noteCodeToString(note, bufferPos, getRightLength);
+		bufferPos = buffer + strlen(buffer);
+	}
+
+	// If we have samples (not wavetables), display the identified pitch
+	::MultiRange range = soundEditor.currentSource->ranges.getElement(this->getValue());
+	AudioFileHolder* holder = range.getAudioFileHolder();
+	if (holder->audioFileType == AudioFileType::SAMPLE) {
+		SampleHolderForVoice* sampleHolder = static_cast<SampleHolderForVoice*>(holder);
+		*(bufferPos++) = ' ';
+		*(bufferPos++) = '(';
+		// transpose = 60 - midiNote <=> note = tranpose - 60;
+		noteCodeToString(sampleHolder->transpose - 60, bufferPos, getRightLength);
+		bufferPos = buffer + strlen(buffer);
+		intToString(sampleHolder.cents, sampleHolder.cents) bufferPos = buffer + strlen(buffer);
+		*(bufferPos++) = ')';
 	}
 }
 
