@@ -46,8 +46,10 @@ void Range::horizontalEncoderAction(int32_t offset) {
 	int32_t maxCol = columnCount();
 	int32_t tmpCol = soundEditor.editingColumn;
 
+	offset = offset > 0 ? 1 : -1;
+
 	for (;;) {
-		tmpCol = (tmpCol + offset) % maxCol + 1;
+		tmpCol = mod(tmpCol + offset, maxCol + 1);
 
 		// Scrolled past all columns, turn off.
 		if (tmpCol < minCol || maxCol < tmpCol) {
