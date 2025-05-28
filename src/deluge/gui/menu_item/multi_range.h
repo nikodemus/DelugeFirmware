@@ -37,12 +37,13 @@ protected:
 	void getText(char* buffer, int32_t* getLeftLength = nullptr, int32_t* getRightLength = nullptr,
 
 	             bool mayShowJustOne = true) override;
-	bool mayEditRangeEdge(RangeEdit whichEdge) override;
+	bool mayEditRangeEdge(int32_t col) override;
 
 	[[nodiscard]] std::string_view getTitle() const override {
 		return l10n::getView(l10n::String::STRING_FOR_NOTE_RANGE);
 	};
 	void drawPixelsForOled() override;
+	[[nodiscard]] virtual int32_t columnCount() { return 3; }
 
 	// NOTE: this isn't strictly speaking needed, but refactoring the selectEncoderAction() and
 	// displayPixelsForOled() to not use additional storage for scroll position was more work

@@ -72,10 +72,10 @@ void MultiRange::selectEncoderAction(int32_t offset) {
 	}
 
 	// If editing the range itself...
-	if (soundEditor.editingRangeEdge != RangeEdit::OFF) {
+	if (soundEditor.editingColumn != RangeEdit::OFF) {
 
 		// Editing left
-		if (soundEditor.editingRangeEdge == RangeEdit::LEFT) {
+		if (soundEditor.editingColumn == 1) {
 
 			::MultiRange* lowerRange = soundEditor.currentSource->ranges.getElement(this->getValue() - 1);
 
@@ -113,7 +113,7 @@ void MultiRange::selectEncoderAction(int32_t offset) {
 		}
 
 		// Editing right
-		else {
+		else if (soundEditor.editingColumn == 2) {
 
 			::MultiRange* currentRange = soundEditor.currentSource->ranges.getElement(this->getValue());
 
@@ -146,6 +146,37 @@ void MultiRange::selectEncoderAction(int32_t offset) {
 
 				if (currentRange->topNote > minimum) {
 					currentRange->topNote--;
+				}
+			}
+		}
+
+		// Editing sample pitch
+		else {
+			::MultiRange* range = soundEditor.currentSource->ranges.getElement(this->getValue());
+			AudioFileHolder* holder = range->getAudioFileHolder();
+			if (holder->audioFileType == AudioFileType::SAMPLE) {
+				SampleHolderForVoice* sampleHolder = static_cast<SampleHolderForVoice*>(holder);
+				offset = offset >= 1 ? 1 : -1;
+				if (Buttons::isShiftButtonPressed()) {
+					// transpose = 60 - note.
+					// -> note 0 -> transpose 60
+					// -> note 127 -> -67
+					// ...and note going up means transpose going down.
+					sampleHolder->transpose = std::clamp(sampleHolder->transpose - offset, -67L, 60L);
+				}
+				else {
+					int32_t cents = std::clamp(sampleHolder->getCents() + offset, -100L, 100L);
+					if (cents > 50 && sampleHolder->transpose > -67) {
+						sampleHolder->transpose -= 1;
+						sampleHolder->setCents(cents - 100);
+					}
+					else if (cents < -50 && sampleHolder->transpose < 60) {
+						sampleHolder->transpose += 1;
+						sampleHolder->setCents(cents + 100);
+					}
+					else {
+						sampleHolder->setCents(std::clamp(cents, -99L, 99L));
+					}
 				}
 			}
 		}
@@ -281,7 +312,7 @@ void MultiRange::selectEncoderAction(int32_t offset) {
 
 void MultiRange::deletePress() {
 
-	if (soundEditor.editingRangeEdge != RangeEdit::OFF) {
+	if (soundEditor.editingColumn != RangeEdit::OFF) {
 		return;
 	}
 	if (display->hasPopup()) {
@@ -388,26 +419,34 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 		noteCodeToString(note, bufferPos, getRightLength);
 	}
 
-	// If we have samples (not wavetables), display the identified pitch
+	// "BOTTOM - C#0 " is 13 characters, align there.
+	char* alignTo = buffer + 13;
+	bufferPos = buffer + strlen(buffer);
+	while (bufferPos < alignTo) {
+		*(bufferPos++) = ' ';
+	}
+
+	// Identify note ranges with wavetables with (WT)
 	::MultiRange* range = soundEditor.currentSource->ranges.getElement(this->getValue());
 	AudioFileHolder* holder = range->getAudioFileHolder();
-	if (holder->audioFileType == AudioFileType::SAMPLE) {
+	if (holder->audioFileType == AudioFileType::WAVETABLE) {
+		*(bufferPos++) = '(';
+		*(bufferPos++) = 'W';
+		*(bufferPos++) = 'T';
+		*(bufferPos++) = ')';
+	}
+	else {
 		SampleHolderForVoice* sampleHolder = static_cast<SampleHolderForVoice*>(holder);
-		// "BOTTOM - C#0 " is 13 characters
-		char* alignTo = buffer + 13;
-		bufferPos = buffer + strlen(buffer);
-		while (bufferPos < alignTo) {
-			*(bufferPos++) = ' ';
-		}
 		*(bufferPos++) = '=';
 		// transpose = 60 - midiNote <=> note = 60 - tranpose;
 		noteCodeToString(60 - sampleHolder->transpose, bufferPos, nullptr, true);
 		bufferPos = buffer + strlen(buffer);
-		if (sampleHolder->cents != 0) {
-			if (sampleHolder->cents >= 0) {
+		int32_t cents = sampleHolder->getCents();
+		if (cents != 0) {
+			if (cents > 0) {
 				*(bufferPos++) = '+';
 			}
-			intToString(sampleHolder->cents, bufferPos);
+			intToString(cents, bufferPos);
 			bufferPos = buffer + strlen(buffer);
 		}
 		*(bufferPos++) = 0;
@@ -419,7 +458,7 @@ MenuItem* MultiRange::selectButtonPress() {
 }
 
 void MultiRange::noteOnToChangeRange(int32_t noteCode) {
-	if (soundEditor.editingRangeEdge == RangeEdit::OFF) {
+	if (soundEditor.editingColumn == RangeEdit::OFF) {
 		int32_t newI = soundEditor.currentSource->getRangeIndex(noteCode);
 		if (newI != this->getValue()) {
 			this->setValue(newI);
@@ -442,11 +481,19 @@ void MultiRange::noteOnToChangeRange(int32_t noteCode) {
 	}
 }
 
-bool MultiRange::mayEditRangeEdge(RangeEdit whichEdge) {
-	if (whichEdge == RangeEdit::LEFT) {
-		return (this->getValue() != 0);
+bool MultiRange::mayEditRangeEdge(int32_t col) {
+	if (col == 1 && this->getValue() == 0) {
+		return false; // BOTTOM
 	}
-	return (this->getValue() != soundEditor.currentSource->ranges.getNumElements() - 1);
+	if (col == 2 && this->getValue() == soundEditor.currentSource->ranges.getNumElements() - 1) {
+		return false; // TOP
+	}
+	if (col == 3
+	    && soundEditor.currentSource->ranges.getElement(this->getValue())->getAudioFileHolder()->audioFileType
+	           == AudioFileType::WAVETABLE) {
+		return false; // (WT)
+	}
+	return true;
 }
 
 void MultiRange::drawPixelsForOled() {
@@ -469,22 +516,26 @@ void MultiRange::drawPixelsForOled() {
 	this->setValue(actualCurrentRange);
 
 	int32_t selectedOption = -1;
-	if (soundEditor.editingRangeEdge == RangeEdit::OFF) {
+	if (soundEditor.editingColumn == RangeEdit::OFF) {
 		selectedOption = this->getValue() - currentScroll;
 	}
 	drawItemsForOled(itemNames, selectedOption);
 
-	if (soundEditor.editingRangeEdge != RangeEdit::OFF) {
+	if (soundEditor.editingColumn != RangeEdit::OFF) {
 		int32_t highlightStartX = 0;
 		int32_t highlightWidth = 0;
 
-		if (soundEditor.editingRangeEdge == RangeEdit::LEFT) {
+		if (soundEditor.editingColumn == 1) {
 			highlightStartX = kTextSpacingX;
 			highlightWidth = kTextSpacingX * 6;
 		}
-		else if (soundEditor.editingRangeEdge == RangeEdit::RIGHT) {
+		else if (soundEditor.editingColumn == 2) {
 			highlightStartX = kTextSpacingX * 10;
 			highlightWidth = kTextSpacingX * 3;
+		}
+		else if (soundEditor.editingColumn == 3) {
+			highlightStartX = kTextSpacingX * 15;
+			highlightWidth = kTextSpacingX * 6;
 		}
 
 		int32_t baseY = (OLED_MAIN_HEIGHT_PIXELS == 64) ? 15 : 14;
