@@ -386,7 +386,6 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 		*(bufferPos++) = '-';
 		*(bufferPos++) = ' ';
 		noteCodeToString(note, bufferPos, getRightLength);
-		bufferPos = buffer + strlen(buffer);
 	}
 
 	// If we have samples (not wavetables), display the identified pitch
@@ -394,14 +393,20 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 	AudioFileHolder* holder = range->getAudioFileHolder();
 	if (holder->audioFileType == AudioFileType::SAMPLE) {
 		SampleHolderForVoice* sampleHolder = static_cast<SampleHolderForVoice*>(holder);
+		auto p = bufferPos;
+		bufferPos = buffer + strlen(buffer);
+		D_PRINTLN(" sz1: %lu", strlen(buffer));
 		*(bufferPos++) = ' ';
-		*(bufferPos++) = '(';
+		*(bufferPos++) = '[';
 		// transpose = 60 - midiNote <=> note = tranpose - 60;
 		noteCodeToString(sampleHolder->transpose - 60, bufferPos, getRightLength);
-		bufferPos = buffer + strlen(buffer);
+		D_PRINTLN(" sz2: %lu", strlen(buffer));
 		intToString(sampleHolder->cents, buffer);
+		D_PRINTLN(" sz3: %lu", strlen(buffer));
 		bufferPos = buffer + strlen(buffer);
-		*(bufferPos++) = ')';
+		*(bufferPos++) = ']';
+		*(bufferPos++) = 0;
+		D_PRINTLN(" fin=%lu", strlen(buffer));
 	}
 }
 
@@ -442,7 +447,7 @@ bool MultiRange::mayEditRangeEdge(RangeEdit whichEdge) {
 
 void MultiRange::drawPixelsForOled() {
 	etl::vector<std::string_view, kOLEDMenuNumOptionsVisible> itemNames{};
-	char nameBuffers[kOLEDMenuNumOptionsVisible][20];
+	char nameBuffers[kOLEDMenuNumOptionsVisible][22];
 	int32_t actualCurrentRange = this->getValue();
 
 	this->setValue(currentScroll);

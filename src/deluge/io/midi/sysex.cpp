@@ -34,9 +34,11 @@ void Debug::sysexReceived(MIDICable& cable, uint8_t* data, int32_t len) {
 	switch (data[1]) {
 	case 0:
 		if (data[2] == 1) {
+			display->popupTextTemporary("SYSEX LOG ON");
 			midiDebugCable = &cable;
 		}
 		else if (data[2] == 0) {
+			display->popupTextTemporary("SYSEX LOG OFF");
 			midiDebugCable = nullptr;
 		}
 		break;
