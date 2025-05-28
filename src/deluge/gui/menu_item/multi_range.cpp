@@ -393,20 +393,23 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 	AudioFileHolder* holder = range->getAudioFileHolder();
 	if (holder->audioFileType == AudioFileType::SAMPLE) {
 		SampleHolderForVoice* sampleHolder = static_cast<SampleHolderForVoice*>(holder);
-		auto p = bufferPos;
+		// "BOTTOM - C#0 " is 13 characters
+		char* alignTo = buffer + 13;
 		bufferPos = buffer + strlen(buffer);
-		D_PRINTLN(" sz1: %lu", strlen(buffer));
-		*(bufferPos++) = ' ';
-		*(bufferPos++) = '[';
+		while (bufferPos < alignTo) {
+			*(bufferPos++) = ' ';
+		}
+		*(bufferPos++) = '=';
 		// transpose = 60 - midiNote <=> note = tranpose - 60;
-		noteCodeToString(sampleHolder->transpose - 60, bufferPos, getRightLength);
-		D_PRINTLN(" sz2: %lu", strlen(buffer));
-		intToString(sampleHolder->cents, buffer);
-		D_PRINTLN(" sz3: %lu", strlen(buffer));
+		noteCodeToString(sampleHolder->transpose - 60, bufferPos, nullptr, true);
 		bufferPos = buffer + strlen(buffer);
-		*(bufferPos++) = ']';
+		if (sampleHolder->cents >= 0) {
+			*(bufferPos++) = '+';
+		}
+		intToString(sampleHolder->cents, bufferPos);
+		bufferPos = buffer + strlen(buffer);
 		*(bufferPos++) = 0;
-		D_PRINTLN(" fin=%lu", strlen(buffer));
+		D_PRINTLN(" fin=%d", (int)strlen(buffer));
 	}
 }
 
