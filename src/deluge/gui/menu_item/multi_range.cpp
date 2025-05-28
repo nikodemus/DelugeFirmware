@@ -390,7 +390,7 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 	}
 
 	// If we have samples (not wavetables), display the identified pitch
-	::MultiRange range = soundEditor.currentSource->ranges.getElement(this->getValue());
+	::MultiRange* range = soundEditor.currentSource->ranges.getElement(this->getValue());
 	AudioFileHolder* holder = range.getAudioFileHolder();
 	if (holder->audioFileType == AudioFileType::SAMPLE) {
 		SampleHolderForVoice* sampleHolder = static_cast<SampleHolderForVoice*>(holder);
