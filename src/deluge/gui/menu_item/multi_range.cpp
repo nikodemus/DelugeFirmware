@@ -399,7 +399,7 @@ void MultiRange::getText(char* buffer, int32_t* getLeftLength, int32_t* getRight
 		// transpose = 60 - midiNote <=> note = tranpose - 60;
 		noteCodeToString(sampleHolder->transpose - 60, bufferPos, getRightLength);
 		bufferPos = buffer + strlen(buffer);
-		intToString(sampleHolder.cents, sampleHolder.cents) bufferPos = buffer + strlen(buffer);
+		intToString(sampleHolder->cents, sampleHolder->cents) bufferPos = buffer + strlen(buffer);
 		*(bufferPos++) = ')';
 	}
 }
