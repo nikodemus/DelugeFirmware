@@ -16,6 +16,7 @@ public:
 	 * -1 if the noteCode is note NOT in key.
 	 */
 	int8_t degreeOf(int32_t nodeCode) const;
+	const char* getNoteString(int32_t noteCode) const;
 	// TODO: make these private later, and maybe rename modeNotes
 	NoteSet modeNotes;
 	int16_t rootNote;

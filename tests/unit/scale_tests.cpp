@@ -448,6 +448,149 @@ TEST(MusicalKeyTest, degreeOf) {
 	}
 }
 
+TEST(MusicalKeyTest, getNoteString_C_Major) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[MAJOR_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("D", key.getNoteString(2));
+	STRCMP_EQUAL("E", key.getNoteString(4));
+	STRCMP_EQUAL("F", key.getNoteString(5));
+	STRCMP_EQUAL("G", key.getNoteString(7));
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+}
+
+TEST(MusicalKeyTest, getNoteString_C_Dorian) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[DORIAN_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("D", key.getNoteString(2));
+	STRCMP_EQUAL("Eb", key.getNoteString(3));
+	STRCMP_EQUAL("F", key.getNoteString(5));
+	STRCMP_EQUAL("G", key.getNoteString(7));
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+}
+
+TEST(MusicalKeyTest, getNoteString_C_Phrygian) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[PHRYGIAN_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("Db", key.getNoteString(1));
+	STRCMP_EQUAL("Eb", key.getNoteString(3));
+	STRCMP_EQUAL("F", key.getNoteString(5));
+	STRCMP_EQUAL("G", key.getNoteString(7));
+	STRCMP_EQUAL("Ab", key.getNoteString(8));
+	STRCMP_EQUAL("Bb", key.getNoteString(10));
+}
+
+TEST(MusicalKeyTest, getNoteString_C_Lydian) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[LYDIAN_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("D", key.getNoteString(2));
+	STRCMP_EQUAL("E", key.getNoteString(4));
+	STRCMP_EQUAL("F#", key.getNoteString(6));
+	STRCMP_EQUAL("G", key.getNoteString(7));
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+}
+
+TEST(MusicalKeyTest, getNoteString_C_Mixolydian) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[MIXOLYDIAN_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("D", key.getNoteString(2));
+	STRCMP_EQUAL("E", key.getNoteString(4));
+	STRCMP_EQUAL("F", key.getNoteString(5));
+	STRCMP_EQUAL("G", key.getNoteString(7));
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("Bb", key.getNoteString(10));
+}
+
+TEST(MusicalKeyTest, getNoteString_C_Minor) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[MINOR_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("D", key.getNoteString(2));
+	STRCMP_EQUAL("Eb", key.getNoteString(3));
+	STRCMP_EQUAL("F", key.getNoteString(5));
+	STRCMP_EQUAL("G", key.getNoteString(7));
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+}
+
+TEST(MusicalKeyTest, getNoteString_C_Locrian) {
+	MusicalKey key;
+	key.rootNote = 0; // C
+	key.modeNotes = presetScaleNotes[LOCRIAN_SCALE];
+	STRCMP_EQUAL("C", key.getNoteString(0));
+	STRCMP_EQUAL("Db", key.getNoteString(1));
+	STRCMP_EQUAL("Eb", key.getNoteString(3));
+	STRCMP_EQUAL("F", key.getNoteString(5));
+	STRCMP_EQUAL("Gb", key.getNoteString(6));
+	STRCMP_EQUAL("Ab", key.getNoteString(8));
+	STRCMP_EQUAL("Bb", key.getNoteString(10));
+}
+
+TEST(MusicalKeyTest, getNoteString_Cs_Major) {
+	MusicalKey key;
+	key.rootNote = 1; // C#
+	key.modeNotes = presetScaleNotes[MAJOR_SCALE];
+	STRCMP_EQUAL("C#", key.getNoteString(1));
+	STRCMP_EQUAL("D#", key.getNoteString(3));
+	STRCMP_EQUAL("E#", key.getNoteString(5));
+	STRCMP_EQUAL("F#", key.getNoteString(6));
+	STRCMP_EQUAL("G#", key.getNoteString(8));
+	STRCMP_EQUAL("A#", key.getNoteString(10));
+	STRCMP_EQUAL("B#", key.getNoteString(12));
+}
+
+TEST(MusicalKeyTest, getNoteString_A_Minor) {
+	;
+	MusicalKey key;
+	key.rootNote = 9; // A
+	key.modeNotes = presetScaleNotes[MINOR_SCALE];
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+	STRCMP_EQUAL("C", key.getNoteString(12));
+	STRCMP_EQUAL("D", key.getNoteString(14));
+	STRCMP_EQUAL("E", key.getNoteString(16));
+	STRCMP_EQUAL("F", key.getNoteString(17));
+	STRCMP_EQUAL("G", key.getNoteString(19));
+}
+
+TEST(MusicalKeyTest, getNoteString_A_Major) {
+	MusicalKey key;
+	key.rootNote = 9; // A
+	key.modeNotes = presetScaleNotes[MAJOR_SCALE];
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+	STRCMP_EQUAL("C#", key.getNoteString(13));
+	STRCMP_EQUAL("D", key.getNoteString(14));
+	STRCMP_EQUAL("E", key.getNoteString(16));
+	STRCMP_EQUAL("F#", key.getNoteString(18));
+	STRCMP_EQUAL("G#", key.getNoteString(20));
+}
+
+TEST(MusicalKeyTest, getNoteString_FSharp_Blue) {
+	MusicalKey key;
+	key.rootNote = 6; // F#
+	key.modeNotes = presetScaleNotes[BLUES_SCALE];
+	STRCMP_EQUAL("F#", key.getNoteString(6));
+	STRCMP_EQUAL("A", key.getNoteString(9));
+	STRCMP_EQUAL("B", key.getNoteString(11));
+	STRCMP_EQUAL("C", key.getNoteString(12));
+	STRCMP_EQUAL("C#", key.getNoteString(13));
+	STRCMP_EQUAL("E", key.getNoteString(16));
+}
+
 TEST_GROUP(UtilTest){};
 
 TEST(UtilTest, isSameNote) {
