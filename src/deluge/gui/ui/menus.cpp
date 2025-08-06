@@ -148,6 +148,7 @@
 #include "gui/menu_item/osc/source/volume.h"
 #include "gui/menu_item/osc/source/wave_index.h"
 #include "gui/menu_item/osc/sync.h"
+#include "gui/menu_item/osc/tracking.h"
 #include "gui/menu_item/osc/type.h"
 #include "gui/menu_item/patch_cable_strength/fixed.h"
 #include "gui/menu_item/patch_cables.h"
@@ -1381,7 +1382,7 @@ HorizontalMenu soundMasterMenu{
 };
 
 HorizontalMenuCombined sourceMenuCombined{
-    {&source0Menu, &source1Menu, &modulator0Menu, &modulator1Menu, &oscMixerMenu, &soundMasterMenu}};
+    {&source0Menu, &source1Menu, &modulator0Menu, &modulator1Menu, &oscMixerMenu, &oscTrackingMenu, &soundMasterMenu}};
 
 Submenu soundFXMenu{
     STRING_FOR_FX,
@@ -1417,6 +1418,7 @@ Submenu soundEditorRootMenu{
         &modulator0Menu,
         &modulator1Menu,
         &oscMixerMenu,
+        &oscTrackingMenu,
         &env1Menu,
         &env2Menu,
         &env3Menu,
